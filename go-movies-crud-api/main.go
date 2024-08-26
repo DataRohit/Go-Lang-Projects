@@ -125,6 +125,26 @@ func updateMovie(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Movie not found", http.StatusNotFound)
 }
 
+func deleteMovie(w http.ResponseWriter, r *http.Request) {
+	logRequest(r)
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+	id := params["id"]
+
+	for idx, movie := range movies {
+		if movie.ID == id {
+			movies = append(movies[:idx], movies[idx+1:]...)
+			log.Printf("Deleted movie: %s", id)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+	}
+
+	log.Printf("Movie not found for deletion: %s", id)
+	http.Error(w, "Movie not found", http.StatusNotFound)
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -161,6 +181,7 @@ func main() {
 	router.HandleFunc("/movies/{id}", getMovie).Methods("GET")
 	router.HandleFunc("/movies", createMovie).Methods("POST")
 	router.HandleFunc("/movies/{id}", updateMovie).Methods("PUT")
+	router.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServe(":8080", router); err != nil {
