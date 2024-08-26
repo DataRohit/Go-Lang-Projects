@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -23,6 +24,23 @@ type Director struct {
 }
 
 var movies []Movie
+
+func logRequest(r *http.Request) {
+	log.Printf("Method: %s, URL: %s, RemoteAddr: %s", r.Method, r.URL.Path, r.RemoteAddr)
+}
+
+func getMovies(w http.ResponseWriter, r *http.Request) {
+	logRequest(r)
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(movies); err != nil {
+		log.Printf("Error encoding movies: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
 
 func main() {
 	router := mux.NewRouter()
@@ -55,6 +73,8 @@ func main() {
 		Genre:  "Adventure, Science Fiction, Action",
 		Budget: 356_000_000.00,
 	})
+
+	router.HandleFunc("/movies", getMovies).Methods("GET")
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServe(":8080", router); err != nil {
