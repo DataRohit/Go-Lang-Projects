@@ -66,6 +66,30 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Movie not found", http.StatusNotFound)
 }
 
+func createMovie(w http.ResponseWriter, r *http.Request) {
+	logRequest(r)
+	w.Header().Set("Content-Type", "application/json")
+
+	var movie Movie
+	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
+		log.Printf("Error decoding movie: %v", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	movie.ID = uuid.New().String()
+	movies = append(movies, movie)
+
+	if err := json.NewEncoder(w).Encode(movie); err != nil {
+		log.Printf("Error encoding created movie: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Created movie: %s", movie.ID)
+	w.WriteHeader(http.StatusCreated)
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -100,6 +124,7 @@ func main() {
 
 	router.HandleFunc("/movies", getMovies).Methods("GET")
 	router.HandleFunc("/movies/{id}", getMovie).Methods("GET")
+	router.HandleFunc("/movies", createMovie).Methods("POST")
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServe(":8080", router); err != nil {
