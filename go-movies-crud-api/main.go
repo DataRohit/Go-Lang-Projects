@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -21,8 +22,39 @@ type Director struct {
 	LastName  string `json:"lastName"`
 }
 
+var movies []Movie
+
 func main() {
 	router := mux.NewRouter()
+
+	movies = append(movies, Movie{
+		ID:    uuid.New().String(),
+		Title: "Dune: Part Two",
+		Directors: []*Director{
+			{FirstName: "Denis", LastName: "Villeneuve"},
+		},
+		Genre:  "Science Fiction, Adventure",
+		Budget: 190_000_000.00,
+	})
+	movies = append(movies, Movie{
+		ID:    uuid.New().String(),
+		Title: "The Batman",
+		Directors: []*Director{
+			{FirstName: "Matt", LastName: "Reeves"},
+		},
+		Genre:  "Crime, Mystery, Thriller",
+		Budget: 185_000_000.00,
+	})
+	movies = append(movies, Movie{
+		ID:    uuid.New().String(),
+		Title: "Avengers: Endgame",
+		Directors: []*Director{
+			{FirstName: "Anthony", LastName: "Russo"},
+			{FirstName: "Joe", LastName: "Russo"},
+		},
+		Genre:  "Adventure, Science Fiction, Action",
+		Budget: 356_000_000.00,
+	})
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServe(":8080", router); err != nil {
