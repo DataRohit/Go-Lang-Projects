@@ -42,6 +42,30 @@ func getMovies(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func getMovie(w http.ResponseWriter, r *http.Request) {
+	logRequest(r)
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+	id := params["id"]
+
+	for _, movie := range movies {
+		if movie.ID == id {
+			if err := json.NewEncoder(w).Encode(movie); err != nil {
+				log.Printf("Error encoding movie: %v", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+	}
+
+	log.Printf("Movie not found: %s", id)
+	http.Error(w, "Movie not found", http.StatusNotFound)
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -75,6 +99,7 @@ func main() {
 	})
 
 	router.HandleFunc("/movies", getMovies).Methods("GET")
+	router.HandleFunc("/movies/{id}", getMovie).Methods("GET")
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServe(":8080", router); err != nil {
