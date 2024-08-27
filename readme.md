@@ -6,5 +6,6 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 
 -   [Project 1: Go Basic HTTP Server](./go-basic-http-server)
 -   [Project 2: Go Movies CRUD API](./go-movies-crud-api)
+-   [Project 3: Go BookStore Management API](./go-bookstore-management-api)
 
 Explore each project to see the code and its corresponding architecture diagram.
