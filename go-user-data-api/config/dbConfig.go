@@ -11,7 +11,10 @@ import (
 
 const uri = "mongodb://localhost:27017"
 
-func InitDB() (*mongo.Client, error) {
+var client *mongo.Client
+var database *mongo.Database
+
+func InitDB() error {
 	log.Println("Connecting to database...")
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
@@ -20,7 +23,7 @@ func InitDB() (*mongo.Client, error) {
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
-		return nil, err
+		return err
 	}
 
 	var result bson.M
@@ -28,6 +31,16 @@ func InitDB() (*mongo.Client, error) {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
 
+	database = client.Database("users")
+
 	log.Println("Pinged your deployment. You successfully connected to MongoDB!")
-	return client, nil
+	return nil
+}
+
+func GetCollection(name string) *mongo.Collection {
+	return database.Collection(name)
+}
+
+func Disconnect(ctx context.Context) error {
+	return client.Disconnect(ctx)
 }
