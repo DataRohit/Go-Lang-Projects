@@ -6,19 +6,14 @@ import (
 	"log"
 
 	dbConfig "github.com/datarohit/go-user-data-api/config"
+	"github.com/datarohit/go-user-data-api/schemas"
+	"github.com/datarohit/go-user-data-api/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type User struct {
-	Id     primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name   string             `json:"name" bson:"name"`
-	Gender string             `json:"gender" bson:"gender"`
-	Age    int                `json:"age" bson:"age"`
-}
-
-func GetAllUsers(ctx context.Context) ([]User, error) {
-	var users []User
+func GetAllUsers(ctx context.Context) ([]schemas.User, error) {
+	var users []schemas.User
 
 	collection := dbConfig.GetCollection("users")
 
@@ -33,7 +28,7 @@ func GetAllUsers(ctx context.Context) ([]User, error) {
 	}()
 
 	for cursor.Next(ctx) {
-		var user User
+		var user schemas.User
 		if err := cursor.Decode(&user); err != nil {
 			return nil, fmt.Errorf("Failed to decode user document: %w", err)
 		}
@@ -47,22 +42,49 @@ func GetAllUsers(ctx context.Context) ([]User, error) {
 	return users, nil
 }
 
-func GetUserByID(ctx context.Context, id string) (User, error) {
+func GetUserByID(ctx context.Context, id string) (schemas.User, error) {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		log.Printf("Invalid user ID format: %v", err)
-		return User{}, fmt.Errorf("Invalid user ID format: %w", err)
+		return schemas.User{}, fmt.Errorf("Invalid user ID format: %w", err)
 	}
 
 	collection := dbConfig.GetCollection("users")
 
-	var user User
+	var user schemas.User
 
 	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
 	if err != nil {
 		log.Printf("Error finding user with ID %s: %v", id, err)
-		return User{}, fmt.Errorf("Failed to find user with ID %s: %w", id, err)
+		return schemas.User{}, fmt.Errorf("Failed to find user with ID %s: %w", id, err)
 	}
 
+	return user, nil
+}
+
+func CreateUser(ctx context.Context, user schemas.User) (schemas.User, error) {
+	if err := utils.ValidateUser(user); err != nil {
+		log.Printf("User validation failed: %v", err)
+		return schemas.User{}, fmt.Errorf("Validation error: %w", err)
+	}
+
+	user.Id = primitive.NewObjectID()
+
+	collection := dbConfig.GetCollection("users")
+
+	result, err := collection.InsertOne(ctx, user)
+	if err != nil {
+		log.Printf("Error creating user in the database: %v", err)
+		return schemas.User{}, fmt.Errorf("Failed to create user: %w", err)
+	}
+
+	if oid, ok := result.InsertedID.(primitive.ObjectID); ok {
+		user.Id = oid
+	} else {
+		log.Printf("Unexpected type for inserted ID: %v", result.InsertedID)
+		return schemas.User{}, fmt.Errorf("Failed to retrieve the inserted ID")
+	}
+
+	log.Printf("User created successfully with ID: %s", user.Id.Hex())
 	return user, nil
 }

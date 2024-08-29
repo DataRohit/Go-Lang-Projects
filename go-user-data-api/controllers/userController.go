@@ -7,6 +7,7 @@ import (
 	"time"
 
 	userModels "github.com/datarohit/go-user-data-api/models"
+	"github.com/datarohit/go-user-data-api/schemas"
 	"github.com/datarohit/go-user-data-api/utils"
 	"github.com/gorilla/mux"
 )
@@ -61,5 +62,37 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	w.Write(res)
+}
+
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+	utils.LogRequest(r)
+
+	var user schemas.User
+	if err := utils.ParseBody(r, &user); err != nil {
+		utils.LogError(r, "Error parsing request body", err)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	createdUser, err := userModels.CreateUser(ctx, user)
+	if err != nil {
+		utils.LogError(r, "Error creating user", err)
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error creating user"})
+		return
+	}
+
+	res, err := json.Marshal(createdUser)
+	if err != nil {
+		utils.LogError(r, "Error marshalling response", err)
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error processing response"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	w.Write(res)
 }
