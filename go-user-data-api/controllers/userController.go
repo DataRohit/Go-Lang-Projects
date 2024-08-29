@@ -124,3 +124,38 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
 }
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	utils.LogRequest(r)
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var updatedUser schemas.User
+	if err := utils.ParseBody(r, &updatedUser); err != nil {
+		utils.LogError(r, "Error parsing request body", err)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	user, err := userModels.UpdateUser(ctx, id, updatedUser)
+	if err != nil {
+		utils.LogError(r, "Error updating user", err)
+		utils.WriteJSONResponse(w, http.StatusNotFound, map[string]string{"error": "User not found or update failed"})
+		return
+	}
+
+	res, err := json.Marshal(user)
+	if err != nil {
+		utils.LogError(r, "Error marshalling response", err)
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error processing response"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
+}

@@ -108,3 +108,39 @@ func DeleteUser(ctx context.Context, id string) (schemas.User, error) {
 	log.Printf("User deleted successfully with ID: %s", id)
 	return deletedUser, nil
 }
+
+func UpdateUser(ctx context.Context, id string, updatedUser schemas.User) (schemas.User, error) {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Printf("Invalid user ID format: %v", err)
+		return schemas.User{}, fmt.Errorf("Invalid user ID format: %w", err)
+	}
+
+	collection := dbConfig.GetCollection("users")
+
+	filter := bson.M{"_id": objectID}
+
+	update := bson.M{
+		"$set": bson.M{
+			"name":   updatedUser.Name,
+			"gender": updatedUser.Gender,
+			"age":    updatedUser.Age,
+		},
+	}
+
+	_, err = collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Printf("Error updating user with ID %s: %v", id, err)
+		return schemas.User{}, fmt.Errorf("Failed to update user with ID %s: %w", id, err)
+	}
+
+	var user schemas.User
+	err = collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		log.Printf("Error retrieving updated user with ID %s: %v", id, err)
+		return schemas.User{}, fmt.Errorf("Failed to retrieve updated user with ID %s: %w", id, err)
+	}
+
+	log.Printf("User updated successfully with ID: %s", id)
+	return user, nil
+}
