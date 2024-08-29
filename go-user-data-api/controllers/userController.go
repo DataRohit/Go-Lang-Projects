@@ -96,3 +96,31 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	w.Write(res)
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	utils.LogRequest(r)
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	deletedUser, err := userModels.DeleteUser(ctx, id)
+	if err != nil {
+		utils.LogError(r, "Error deleting user", err)
+		utils.WriteJSONResponse(w, http.StatusNotFound, map[string]string{"error": "User not found"})
+		return
+	}
+
+	res, err := json.Marshal(deletedUser)
+	if err != nil {
+		utils.LogError(r, "Error marshalling response", err)
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error processing response"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
+}

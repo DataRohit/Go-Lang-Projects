@@ -88,3 +88,23 @@ func CreateUser(ctx context.Context, user schemas.User) (schemas.User, error) {
 	log.Printf("User created successfully with ID: %s", user.Id.Hex())
 	return user, nil
 }
+
+func DeleteUser(ctx context.Context, id string) (schemas.User, error) {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Printf("Invalid user ID format: %v", err)
+		return schemas.User{}, fmt.Errorf("Invalid user ID format: %w", err)
+	}
+
+	collection := dbConfig.GetCollection("users")
+
+	var deletedUser schemas.User
+	err = collection.FindOneAndDelete(ctx, bson.M{"_id": objectID}).Decode(&deletedUser)
+	if err != nil {
+		log.Printf("Error finding or deleting user with ID %s: %v", id, err)
+		return schemas.User{}, fmt.Errorf("Failed to find or delete user with ID %s: %w", id, err)
+	}
+
+	log.Printf("User deleted successfully with ID: %s", id)
+	return deletedUser, nil
+}
