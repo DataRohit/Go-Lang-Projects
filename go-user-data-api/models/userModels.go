@@ -46,3 +46,23 @@ func GetAllUsers(ctx context.Context) ([]User, error) {
 
 	return users, nil
 }
+
+func GetUserByID(ctx context.Context, id string) (User, error) {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Printf("Invalid user ID format: %v", err)
+		return User{}, fmt.Errorf("Invalid user ID format: %w", err)
+	}
+
+	collection := dbConfig.GetCollection("users")
+
+	var user User
+
+	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
+	if err != nil {
+		log.Printf("Error finding user with ID %s: %v", id, err)
+		return User{}, fmt.Errorf("Failed to find user with ID %s: %w", id, err)
+	}
+
+	return user, nil
+}
