@@ -16,7 +16,7 @@
 -   `/books/{id}` - GetBookByID() handler to fetch a single book using the `bookId`
 -   `/books` - CreateBook() handler to create a new book with unique uuid
 -   `/books/{id}` - DeleteBook() handler to delete an instance of book from the db
--   `/books` - UpdateBook() handler to update an existing book record in db
+-   `/books/{id}` - UpdateBook() handler to update an existing book record in db
 
 ## Database
 

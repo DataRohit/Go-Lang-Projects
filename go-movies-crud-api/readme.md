@@ -16,7 +16,7 @@
 -   `/movies/{id}` - getMovie() handler to fetch a single movie using the `id`
 -   `/movies` - createMovie() handler to create a new movie with unique uuid
 -   `/movies/{id}` - deleteMovie() handler to delete an instance of movie from the slice
--   `/movies` - updateMovie() handler to update an existing book record in slice
+-   `/movies/{id}` - updateMovie() handler to update an existing book record in slice
 
 ### Architecture Diagram
 
