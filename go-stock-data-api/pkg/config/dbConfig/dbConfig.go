@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/datarohit/go-stock-data-api/pkg/schemas"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -30,6 +31,14 @@ func InitializeDatabase() error {
 	}
 
 	log.Println("Connected to PostgreSQL database successfully!")
+
+	err = DatabaseConnection.AutoMigrate(&schemas.Stock{})
+	if err != nil {
+		log.Fatalf("Error during auto-migration: %v", err)
+		return err
+	}
+
+	log.Println("Auto-migration completed successfully!")
 	return nil
 }
 

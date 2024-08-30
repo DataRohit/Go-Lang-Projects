@@ -30,3 +30,13 @@ func GetStockBySymbol(symbol string) (*schemas.Stock, error) {
 
 	return &stock, nil
 }
+
+func CreateStock(stock *schemas.Stock) (*schemas.Stock, error) {
+	result := dbConfig.DatabaseConnection.Create(stock)
+	if result.Error != nil {
+		log.Printf("Error creating stock: %v", result.Error)
+		return nil, result.Error
+	}
+
+	return stock, nil
+}
