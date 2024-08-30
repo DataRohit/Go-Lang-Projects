@@ -3,6 +3,7 @@ module github.com/datarohit/go-stock-data-api
 go 1.23.0
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.11

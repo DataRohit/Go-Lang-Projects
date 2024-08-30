@@ -16,20 +16,20 @@ func GetAllStocks(w http.ResponseWriter, r *http.Request) {
 	stocks, err := models.GetAllStocks()
 	if err != nil {
 		utils.LogError(r, "Unable to fetch stocks", err)
-		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error fetching stocks"})
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
-	res, err := json.Marshal(stocks)
-	if err != nil {
-		utils.LogError(r, "Error marshalling response", err)
-		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error processing response"})
+	if len(stocks) == 0 {
+		utils.LogError(r, "No stocks found", err)
+		utils.WriteJSONResponse(w, http.StatusNotFound, map[string]string{"error": "no stocks found"})
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "stocks fetched successfully",
+		"stocks":  stocks,
+	})
 }
 
 func GetStockBySymbol(w http.ResponseWriter, r *http.Request) {
@@ -41,25 +41,14 @@ func GetStockBySymbol(w http.ResponseWriter, r *http.Request) {
 	stock, err := models.GetStockBySymbol(symbol)
 	if err != nil {
 		utils.LogError(r, "Unable to fetch stock", err)
-		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error fetching stock"})
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
-	if stock == nil {
-		utils.WriteJSONResponse(w, http.StatusNotFound, map[string]string{"error": "Stock not found"})
-		return
-	}
-
-	res, err := json.Marshal(stock)
-	if err != nil {
-		utils.LogError(r, "Error marshalling response", err)
-		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error processing response"})
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "stock fetched successfully",
+		"stock":   stock,
+	})
 }
 
 func CreateStock(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +59,7 @@ func CreateStock(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&stock)
 	if err != nil {
 		utils.LogError(r, "Error decoding request body", err)
-		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -84,18 +73,31 @@ func CreateStock(w http.ResponseWriter, r *http.Request) {
 	createdStock, err := models.CreateStock(&stock)
 	if err != nil {
 		utils.LogError(r, "Error creating stock", err)
-		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error creating stock"})
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
-	res, err := json.Marshal(createdStock)
+	utils.WriteJSONResponse(w, http.StatusCreated, map[string]interface{}{
+		"message": "stock created successfully",
+		"stock":   createdStock,
+	})
+}
+
+func DeleteStock(w http.ResponseWriter, r *http.Request) {
+	utils.LogRequest(r)
+
+	vars := mux.Vars(r)
+	symbol := vars["symbol"]
+
+	deletedStock, err := models.DeleteStock(symbol)
 	if err != nil {
-		utils.LogError(r, "Error marshalling response", err)
-		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "Error processing response"})
+		utils.LogError(r, "Unable to delete stock", err)
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write(res)
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "stock deleted successfully",
+		"stock":   deletedStock,
+	})
 }
