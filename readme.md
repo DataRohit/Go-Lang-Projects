@@ -8,5 +8,6 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 -   [Project 2: Go Movies CRUD API](./go-movies-crud-api)
 -   [Project 3: Go BookStore Management API](./go-bookstore-management-api)
 -   [Project 4: Go User Data API](./go-user-data-api)
+-   [Project 5: Go Stock Data API](./go-stock-data-api)
 
 Explore each project to see the code and its corresponding architecture diagram.
