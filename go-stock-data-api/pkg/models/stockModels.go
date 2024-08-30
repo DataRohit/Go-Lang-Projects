@@ -58,3 +58,21 @@ func DeleteStock(symbol string) (*schemas.Stock, error) {
 
 	return &stock, nil
 }
+
+func UpdateStock(symbol string, updatedData map[string]interface{}) (*schemas.Stock, error) {
+	var stock schemas.Stock
+
+	result := dbConfig.DatabaseConnection.Where("symbol = ?", symbol).First(&stock)
+	if result.Error != nil {
+		log.Printf("Error finding stock with symbol %s: %v", symbol, result.Error)
+		return nil, result.Error
+	}
+
+	result = dbConfig.DatabaseConnection.Model(&stock).Updates(updatedData)
+	if result.Error != nil {
+		log.Printf("Error updating stock with symbol %s: %v", symbol, result.Error)
+		return nil, result.Error
+	}
+
+	return &stock, nil
+}

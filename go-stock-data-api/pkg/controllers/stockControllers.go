@@ -56,14 +56,14 @@ func CreateStock(w http.ResponseWriter, r *http.Request) {
 
 	var stock schemas.Stock
 
-	err := json.NewDecoder(r.Body).Decode(&stock)
+	err := utils.ParseBody(r, &stock)
 	if err != nil {
 		utils.LogError(r, "Error decoding request body", err)
 		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
-	err = utils.ValidateStock(stock)
+	err = utils.ValidateStock(&stock)
 	if err != nil {
 		utils.LogError(r, "Validation failed", err)
 		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
@@ -99,5 +99,45 @@ func DeleteStock(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
 		"message": "stock deleted successfully",
 		"stock":   deletedStock,
+	})
+}
+
+func UpdateStock(w http.ResponseWriter, r *http.Request) {
+	utils.LogRequest(r)
+
+	vars := mux.Vars(r)
+	symbol := vars["symbol"]
+
+	var updatedData map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&updatedData)
+	if err != nil {
+		utils.LogError(r, "Error decoding request body", err)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "invalid request body"})
+		return
+	}
+
+	fieldsToValidate := make([]string, 0, len(updatedData))
+	for field := range updatedData {
+		fieldsToValidate = append(fieldsToValidate, field)
+	}
+
+	var stock schemas.Stock
+	err = utils.ValidateStock(&stock, fieldsToValidate...)
+	if err != nil {
+		utils.LogError(r, "Validation failed", err)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	updatedStock, err := models.UpdateStock(symbol, updatedData)
+	if err != nil {
+		utils.LogError(r, "Unable to update stock", err)
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "stock updated successfully",
+		"stock":   updatedStock,
 	})
 }
