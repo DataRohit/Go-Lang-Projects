@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/datarohit/go-stock-data-api/pkg/config/dbConfig"
+	"github.com/datarohit/go-stock-data-api/pkg/routes"
 	"github.com/gorilla/mux"
 )
 
@@ -26,6 +27,7 @@ func main() {
 	}()
 
 	router := mux.NewRouter()
+	routes.RegisterStockRoutes(router)
 
 	server := &http.Server{
 		Handler:      router,
