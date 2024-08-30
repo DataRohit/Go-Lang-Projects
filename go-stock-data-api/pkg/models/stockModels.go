@@ -18,3 +18,15 @@ func GetAllStocks() ([]schemas.Stock, error) {
 
 	return stocks, nil
 }
+
+func GetStockBySymbol(symbol string) (*schemas.Stock, error) {
+	var stock schemas.Stock
+
+	result := dbConfig.DatabaseConnection.Where("symbol = ?", symbol).First(&stock)
+	if result.Error != nil {
+		log.Printf("Error retrieving stock with symbol %s: %v", symbol, result.Error)
+		return nil, result.Error
+	}
+
+	return &stock, nil
+}

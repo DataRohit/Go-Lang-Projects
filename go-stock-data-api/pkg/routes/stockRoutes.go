@@ -7,4 +7,5 @@ import (
 
 var RegisterStockRoutes = func(router *mux.Router) {
 	router.HandleFunc("/stocks", controllers.GetAllStocks).Methods("GET", "OPTIONS")
+	router.HandleFunc("/stocks/{symbol}", controllers.GetStockBySymbol).Methods("GET", "OPTIONS")
 }
