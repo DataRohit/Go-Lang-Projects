@@ -3,8 +3,8 @@ package models
 import (
 	"log"
 
-	"github.com/datarohit/go-stock-data-api/pkg/config/dbConfig"
-	"github.com/datarohit/go-stock-data-api/pkg/schemas"
+	"go-stock-data-api/pkg/config/dbConfig"
+	"go-stock-data-api/pkg/schemas"
 )
 
 func GetAllStocks() ([]schemas.Stock, error) {

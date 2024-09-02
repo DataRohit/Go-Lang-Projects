@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/datarohit/go-stock-data-api/pkg/config/dbConfig"
-	"github.com/datarohit/go-stock-data-api/pkg/routes"
+	"go-stock-data-api/pkg/config/dbConfig"
+	"go-stock-data-api/pkg/routes"
 	"github.com/gorilla/mux"
 )
 

@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/datarohit/go-user-data-api/schemas"
+	"go-user-data-api/schemas"
 )
 
 func ValidateUser(user schemas.User) error {

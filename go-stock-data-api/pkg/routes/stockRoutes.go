@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/datarohit/go-stock-data-api/pkg/controllers"
+	"go-stock-data-api/pkg/controllers"
 	"github.com/gorilla/mux"
 )
 

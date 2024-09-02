@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	dbConfig "github.com/datarohit/go-user-data-api/config"
-	"github.com/datarohit/go-user-data-api/schemas"
-	"github.com/datarohit/go-user-data-api/utils"
+	dbConfig "go-user-data-api/config"
+	"go-user-data-api/schemas"
+	"go-user-data-api/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

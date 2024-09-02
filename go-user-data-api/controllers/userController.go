@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	userModels "github.com/datarohit/go-user-data-api/models"
-	"github.com/datarohit/go-user-data-api/schemas"
-	"github.com/datarohit/go-user-data-api/utils"
+	userModels "go-user-data-api/models"
+	"go-user-data-api/schemas"
+	"go-user-data-api/utils"
 	"github.com/gorilla/mux"
 )
 

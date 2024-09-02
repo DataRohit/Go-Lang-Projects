@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/datarohit/go-stock-data-api/pkg/models"
-	"github.com/datarohit/go-stock-data-api/pkg/schemas"
-	"github.com/datarohit/go-stock-data-api/pkg/utils"
+	"go-stock-data-api/pkg/models"
+	"go-stock-data-api/pkg/schemas"
+	"go-stock-data-api/pkg/utils"
 	"github.com/gorilla/mux"
 )
 

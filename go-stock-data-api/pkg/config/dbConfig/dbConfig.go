@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/datarohit/go-stock-data-api/pkg/schemas"
+	"go-stock-data-api/pkg/schemas"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

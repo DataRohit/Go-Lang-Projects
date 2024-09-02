@@ -1,4 +1,4 @@
-module github.com/datarohit/go-user-data-api
+module go-user-data-api
 
 go 1.23.0
 

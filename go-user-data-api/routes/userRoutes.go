@@ -1,7 +1,7 @@
 package userRoutes
 
 import (
-	userController "github.com/datarohit/go-user-data-api/controllers"
+	userController "go-user-data-api/controllers"
 	"github.com/gorilla/mux"
 )
 

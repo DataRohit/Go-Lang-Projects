@@ -1,3 +1,3 @@
-module github.com/datarohit/go-basic-http-server
+module go-basic-http-server
 
 go 1.23.0

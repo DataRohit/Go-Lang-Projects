@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/datarohit/go-bookstore-management-api/pkg/config"
+	"go-bookstore-management-api/pkg/config"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )

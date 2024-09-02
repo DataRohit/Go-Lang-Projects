@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/datarohit/go-bookstore-management-api/pkg/config"
-	"github.com/datarohit/go-bookstore-management-api/pkg/routes"
+	"go-bookstore-management-api/pkg/config"
+	"go-bookstore-management-api/pkg/routes"
 	"github.com/gorilla/mux"
 )
 

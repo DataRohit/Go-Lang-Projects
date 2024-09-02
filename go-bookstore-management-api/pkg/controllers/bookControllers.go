@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/datarohit/go-bookstore-management-api/pkg/models"
-	"github.com/datarohit/go-bookstore-management-api/pkg/utils"
+	"go-bookstore-management-api/pkg/models"
+	"go-bookstore-management-api/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"

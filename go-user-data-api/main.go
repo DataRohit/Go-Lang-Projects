@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"time"
 
-	dbConfig "github.com/datarohit/go-user-data-api/config"
-	userRoutes "github.com/datarohit/go-user-data-api/routes"
+	dbConfig "go-user-data-api/config"
+	userRoutes "go-user-data-api/routes"
 	"github.com/gorilla/mux"
 )
 
