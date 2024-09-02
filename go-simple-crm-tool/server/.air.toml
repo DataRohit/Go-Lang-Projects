@@ -1,0 +1,9 @@
+[build]
+    bin = "tmp/main"
+    cmd = "go run ./cmd/main/main.go"
+    include = ["cmd", "pkg"]
+    exclude = ["tmp"]
+    build_args = ["-mod=mod"]
+
+[log]
+    time = true

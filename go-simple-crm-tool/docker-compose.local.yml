@@ -1,0 +1,24 @@
+volumes:
+    local-postgres-data: {}
+
+services:
+    postgres:
+        image: postgres:latest
+        container_name: go-simple-crm-tool-postgres
+        volumes:
+            - local-postgres-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        env_file:
+            - ./.envs/.local/.postgres.env
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - simple-crm-tool-network
+
+networks:
+    simple-crm-tool-network:
+        name: simple-crm-tool-network

@@ -1,0 +1,51 @@
+# Version control and configuration files
+.editorconfig
+.gitattributes
+.gitignore
+
+# Directories and files related to project structure and development
+.envs/
+venv/
+
+# Git repository metadata
+.git/
+
+# Go specific files and directories
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Binaries
+bin/
+vendor/
+
+# Dependencies and build output
+**/vendor/
+**/bin/
+**/pkg/
+*.log
+
+# Dependency directories and cache
+/go
+/gocache
+/gopath
+
+# IDE and editor specific files
+.vscode/
+.idea/
+*.swp
+
+# Test outputs
+*.coverprofile
+*.cov
+
+# Node.js dependencies if you have a frontend
+node_modules/
+
+# Docker related files
+Dockerfile*
+docker-compose*
