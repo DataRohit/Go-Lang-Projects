@@ -2,10 +2,12 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
+	"go-simple-crm-tool/pkg/utils"
+
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -21,7 +23,10 @@ func InitializeDatabase() error {
 
 	port, err := strconv.Atoi(databasePort)
 	if err != nil {
-		log.Fatalf("Invalid database port: %v", err)
+		utils.Fatal(logrus.Fields{
+			"file": "internal/database/database.go", "action": "InitializeDatabase",
+			"databasePort": databasePort,
+		}, fmt.Sprintf("Invalid database port: %v", err))
 		return err
 	}
 
@@ -32,18 +37,45 @@ func InitializeDatabase() error {
 
 	DatabaseConnection, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Error connecting to the database: %v", err)
+		utils.Fatal(logrus.Fields{
+			"file": "internal/database/database.go", "action": "InitializeDatabase",
+			"databaseHost": databaseHost,
+			"databaseUser": databaseUser,
+			"databaseName": databaseName,
+			"databasePort": port,
+		}, fmt.Sprintf("Error connecting to the database: %v", err))
 		return err
 	}
 
-	log.Println("Connected to PostgreSQL database successfully!")
+	utils.Info(logrus.Fields{"action": "InitializeDatabase"}, "Connected to PostgreSQL database successfully!")
 	return nil
 }
 
 func CloseDatabase() error {
 	sqlDatabase, err := DatabaseConnection.DB()
 	if err != nil {
+		utils.Warn(logrus.Fields{"action": "CloseDatabase"}, fmt.Sprintf("Failed to retrieve database object: %v", err))
 		return err
 	}
-	return sqlDatabase.Close()
+	if err := sqlDatabase.Close(); err != nil {
+		utils.Warn(logrus.Fields{"action": "CloseDatabase"}, fmt.Sprintf("Failed to close database connection: %v", err))
+		return err
+	}
+	utils.Info(logrus.Fields{"action": "CloseDatabase"}, "Database connection closed successfully.")
+	return nil
+}
+
+func MigrateModel(model interface{}) error {
+	err := DatabaseConnection.AutoMigrate(model)
+	if err != nil {
+		utils.Fatal(logrus.Fields{"action": "MigrateModel",
+			"model": fmt.Sprintf("%T", model),
+		}, fmt.Sprintf("Failed to migrate model: %v", err))
+		return err
+	}
+
+	utils.Info(logrus.Fields{"action": "MigrateModel",
+		"model": fmt.Sprintf("%T", model),
+	}, "Model migrated successfully.")
+	return nil
 }

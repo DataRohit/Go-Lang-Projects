@@ -2,23 +2,26 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"go-simple-crm-tool/api/schemas"
 	"go-simple-crm-tool/internal/database"
+	"go-simple-crm-tool/pkg/utils"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 func closeDatabaseConnection() {
 	if err := database.CloseDatabase(); err != nil {
-		log.Printf("Failed to close the database connection: %v", err)
+		utils.Warn(logrus.Fields{"action": "closeDatabase"}, fmt.Sprintf("Failed to close the database connection: %v", err))
 	} else {
-		log.Println("Database connection closed successfully")
+		utils.Info(logrus.Fields{"action": "closeDatabase"}, "Database connection closed successfully")
 	}
 }
 
@@ -31,9 +34,9 @@ func startServer(router *mux.Router) *http.Server {
 	}
 
 	go func() {
-		log.Println("Server starting on http://localhost:8080")
+		utils.Info(logrus.Fields{"action": "startServer"}, "Server starting on http://localhost:8080")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Server failed: %v", err)
+			utils.Fatal(logrus.Fields{"action": "startServer"}, fmt.Sprintf("Server failed: %v", err))
 		}
 	}()
 
@@ -50,29 +53,35 @@ func waitForShutdown(server *http.Server) {
 	defer shutdownCancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Fatalf("Server forced to shutdown: %v", err)
+		utils.Fatal(logrus.Fields{"action": "waitForShutdown"}, fmt.Sprintf("Server forced to shutdown: %v", err))
 	} else {
-		log.Println("Server shutdown gracefully")
+		utils.Info(logrus.Fields{"action": "waitForShutdown"}, "Server shutdown gracefully")
+	}
+}
+
+func makeMigrations() {
+	err := database.MigrateModel(&schemas.Lead{})
+	if err != nil {
+		utils.Fatal(logrus.Fields{"action": "makeMigrations"}, fmt.Sprintf("Failed to migrate Lead model: %v", err))
 	}
 }
 
 func main() {
+	utils.InitLogger(logrus.InfoLevel, "text", "stdout")
+
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		utils.Fatal(logrus.Fields{"action": "main"}, fmt.Sprintf("Error loading .env file: %v", err))
 	}
 
 	if err := database.InitializeDatabase(); err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
+		utils.Fatal(logrus.Fields{"action": "main"}, fmt.Sprintf("Failed to initialize database: %v", err))
 	}
 	defer closeDatabaseConnection()
 
+	makeMigrations()
+
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to the Simple CRM Tool!"))
-	}).Methods("GET")
-
 	server := startServer(router)
-
 	waitForShutdown(server)
 }
