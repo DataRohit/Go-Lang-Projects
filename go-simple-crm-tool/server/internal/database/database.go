@@ -23,7 +23,7 @@ func InitializeDatabase() error {
 
 	port, err := strconv.Atoi(databasePort)
 	if err != nil {
-		utils.Fatal(logrus.Fields{
+		utils.Warn(logrus.Fields{
 			"file": "internal/database/database.go", "action": "InitializeDatabase",
 			"databasePort": databasePort,
 		}, fmt.Sprintf("Invalid database port: %v", err))
@@ -37,7 +37,7 @@ func InitializeDatabase() error {
 
 	DatabaseConnection, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 	if err != nil {
-		utils.Fatal(logrus.Fields{
+		utils.Warn(logrus.Fields{
 			"file": "internal/database/database.go", "action": "InitializeDatabase",
 			"databaseHost": databaseHost,
 			"databaseUser": databaseUser,
@@ -68,7 +68,7 @@ func CloseDatabase() error {
 func MigrateModel(model interface{}) error {
 	err := DatabaseConnection.AutoMigrate(model)
 	if err != nil {
-		utils.Fatal(logrus.Fields{"action": "MigrateModel",
+		utils.Warn(logrus.Fields{"action": "MigrateModel",
 			"model": fmt.Sprintf("%T", model),
 		}, fmt.Sprintf("Failed to migrate model: %v", err))
 		return err

@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"go-simple-crm-tool/api/routes"
 	"go-simple-crm-tool/api/schemas"
 	"go-simple-crm-tool/internal/database"
 	"go-simple-crm-tool/pkg/utils"
@@ -36,7 +37,7 @@ func startServer(router *mux.Router) *http.Server {
 	go func() {
 		utils.Info(logrus.Fields{"action": "startServer"}, "Server starting on http://localhost:8080")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			utils.Fatal(logrus.Fields{"action": "startServer"}, fmt.Sprintf("Server failed: %v", err))
+			utils.Warn(logrus.Fields{"action": "startServer"}, fmt.Sprintf("Server failed: %v", err))
 		}
 	}()
 
@@ -53,7 +54,7 @@ func waitForShutdown(server *http.Server) {
 	defer shutdownCancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		utils.Fatal(logrus.Fields{"action": "waitForShutdown"}, fmt.Sprintf("Server forced to shutdown: %v", err))
+		utils.Warn(logrus.Fields{"action": "waitForShutdown"}, fmt.Sprintf("Server forced to shutdown: %v", err))
 	} else {
 		utils.Info(logrus.Fields{"action": "waitForShutdown"}, "Server shutdown gracefully")
 	}
@@ -62,7 +63,7 @@ func waitForShutdown(server *http.Server) {
 func makeMigrations() {
 	err := database.MigrateModel(&schemas.Lead{})
 	if err != nil {
-		utils.Fatal(logrus.Fields{"action": "makeMigrations"}, fmt.Sprintf("Failed to migrate Lead model: %v", err))
+		utils.Warn(logrus.Fields{"action": "makeMigrations"}, fmt.Sprintf("Failed to migrate Lead model: %v", err))
 	}
 }
 
@@ -70,17 +71,18 @@ func main() {
 	utils.InitLogger(logrus.InfoLevel, "text", "stdout")
 
 	if err := godotenv.Load(); err != nil {
-		utils.Fatal(logrus.Fields{"action": "main"}, fmt.Sprintf("Error loading .env file: %v", err))
+		utils.Warn(logrus.Fields{"action": "main"}, fmt.Sprintf("Error loading .env file: %v", err))
 	}
 
 	if err := database.InitializeDatabase(); err != nil {
-		utils.Fatal(logrus.Fields{"action": "main"}, fmt.Sprintf("Failed to initialize database: %v", err))
+		utils.Warn(logrus.Fields{"action": "main"}, fmt.Sprintf("Failed to initialize database: %v", err))
 	}
 	defer closeDatabaseConnection()
 
 	makeMigrations()
 
 	router := mux.NewRouter()
+	routes.RegisterLeadRoutes(router)
 
 	server := startServer(router)
 	waitForShutdown(server)

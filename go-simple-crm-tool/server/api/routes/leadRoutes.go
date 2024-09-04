@@ -1,11 +1,15 @@
 package routes
 
-import "github.com/gorilla/mux"
+import (
+	"go-simple-crm-tool/api/handlers"
+
+	"github.com/gorilla/mux"
+)
 
 var RegisterLeadRoutes = func(router *mux.Router) {
-	// router.HandleFunc("/leads", leadController.CreateLead).Methods("POST")
-	// router.HandleFunc("/leads", leadController.GetAllLeads).Methods("GET")
-	// router.HandleFunc("/leads/{id}", leadController.GetLeadByID).Methods("GET")
-	// router.HandleFunc("/leads/{id}", leadController.DeleteLead).Methods("DELETE")
-	// router.HandleFunc("/leads/{id}", leadController.UpdateLead).Methods("PUT")
+	router.HandleFunc("/leads", handlers.CreateLeadsHandler).Methods("POST")
+	router.HandleFunc("/leads", handlers.GetAllLeadsHandler).Methods("GET")
+	// router.HandleFunc("/leads/{id}", handlers.GetLeadByIDHandler).Methods("GET")
+	// router.HandleFunc("/leads/{id}", handlers.DeleteLeadHandler).Methods("DELETE")
+	// router.HandleFunc("/leads/{id}", handlers.UpdateLeadHandler).Methods("PUT")
 }
