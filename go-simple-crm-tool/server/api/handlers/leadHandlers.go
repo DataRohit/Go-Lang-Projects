@@ -264,7 +264,7 @@ func GetRandomLeadHandler(w http.ResponseWriter, r *http.Request) {
 			"method":     r.Method,
 			"url":        r.URL.Path,
 			"remoteAddr": r.RemoteAddr,
-		}, "Error retrieving random lead: "+err.Error())
+		}, fmt.Sprintf("Error retrieving random lead: %v", err))
 		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
@@ -301,5 +301,33 @@ func GetLeadByIDHandler(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
 		"message": "lead fetched successfully",
 		"lead":    lead,
+	})
+}
+
+func DeleteLeadByIDHandler(w http.ResponseWriter, r *http.Request) {
+	utils.Info(logrus.Fields{
+		"action":     "DeleteLeadByID",
+		"method":     r.Method,
+		"url":        r.URL.Path,
+		"remoteAddr": r.RemoteAddr,
+	}, "DELETE request received at /lead/{id}")
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	err := models.DeleteLeadByID(id)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "GetLeadByIDHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Unable to delete lead: %v", err))
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "lead deleted successfully",
 	})
 }

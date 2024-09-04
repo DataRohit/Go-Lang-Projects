@@ -15,4 +15,5 @@ var RegisterLeadRoutes = func(router *mux.Router) {
 	router.HandleFunc("/lead", handlers.CreateSingleLeadHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/lead", handlers.GetRandomLeadHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/lead/{id}", handlers.GetLeadByIDHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/lead/{id}", handlers.DeleteLeadByIDHandler).Methods("DELETE", "OPTIONS")
 }
