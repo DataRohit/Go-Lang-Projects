@@ -6,6 +6,9 @@ import (
 	"go-simple-crm-tool/internal/database"
 	"go-simple-crm-tool/pkg/utils"
 	"log"
+	"time"
+
+	"math/rand"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -31,6 +34,45 @@ func GetAllLeads() ([]schemas.Lead, error) {
 	}
 
 	return leads, nil
+}
+
+func GetRandomLead() (*schemas.Lead, error) {
+	var lead schemas.Lead
+	var count int64
+
+	result := database.DatabaseConnection.Model(&schemas.Lead{}).Count(&count)
+	if result.Error != nil {
+		utils.Warn(logrus.Fields{"action": "GetRandomLead"}, "Error counting leads: "+result.Error.Error())
+		return nil, result.Error
+	}
+
+	if count == 0 {
+		return nil, fmt.Errorf("no leads found")
+	}
+
+	seed := rand.NewSource(time.Now().UnixNano())
+	random := rand.New(seed)
+	randomOffset := random.Intn(int(count))
+
+	result = database.DatabaseConnection.Offset(randomOffset).First(&lead)
+	if result.Error != nil {
+		utils.Warn(logrus.Fields{"action": "GetRandomLead"}, "Error retrieving random lead: "+result.Error.Error())
+		return nil, result.Error
+	}
+
+	return &lead, nil
+}
+
+func GetLeadByID(id string) (*schemas.Lead, error) {
+	var lead schemas.Lead
+
+	result := database.DatabaseConnection.Where("id = ?", id).First(&lead)
+	if result.Error != nil {
+		log.Printf("Error retrieving lead with id %s: %v", id, result.Error)
+		return nil, result.Error
+	}
+
+	return &lead, nil
 }
 
 func DeleteLead(id uuid.UUID) error {

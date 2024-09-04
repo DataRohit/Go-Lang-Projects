@@ -8,12 +8,13 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
-func CreateLeadsHandler(w http.ResponseWriter, r *http.Request) {
+func CreateMultipleLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	utils.Info(logrus.Fields{
-		"action":     "CreateLeadHandler",
+		"action":     "CreateMultipleLeadsHandler",
 		"method":     r.Method,
 		"url":        r.URL.Path,
 		"remoteAddr": r.RemoteAddr,
@@ -24,7 +25,7 @@ func CreateLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	err := utils.ParseBody(r, &leads)
 	if err != nil {
 		utils.Warn(logrus.Fields{
-			"action":     "CreateLeadHandler",
+			"action":     "CreateMultipleLeadsHandler",
 			"method":     r.Method,
 			"url":        r.URL.Path,
 			"remoteAddr": r.RemoteAddr,
@@ -38,7 +39,7 @@ func CreateLeadsHandler(w http.ResponseWriter, r *http.Request) {
 		err = utils.ValidateLead(&lead)
 		if err != nil {
 			utils.Warn(logrus.Fields{
-				"action":     "CreateLeadHandler",
+				"action":     "CreateMultipleLeadsHandler",
 				"method":     r.Method,
 				"url":        r.URL.Path,
 				"remoteAddr": r.RemoteAddr,
@@ -50,7 +51,7 @@ func CreateLeadsHandler(w http.ResponseWriter, r *http.Request) {
 		createdLead, err := models.CreateLead(&lead)
 		if err != nil {
 			utils.Warn(logrus.Fields{
-				"action":     "CreateLeadHandler",
+				"action":     "CreateMultipleLeadsHandler",
 				"method":     r.Method,
 				"url":        r.URL.Path,
 				"remoteAddr": r.RemoteAddr,
@@ -105,9 +106,9 @@ func GetAllLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func DeleteLeadsHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteMultipleLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	utils.Info(logrus.Fields{
-		"action":     "DeleteLeadsHandler",
+		"action":     "DeleteMultipleLeadsHandler",
 		"method":     r.Method,
 		"url":        r.URL.Path,
 		"remoteAddr": r.RemoteAddr,
@@ -118,7 +119,7 @@ func DeleteLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	err := utils.ParseBody(r, &ids)
 	if err != nil {
 		utils.Warn(logrus.Fields{
-			"action":     "DeleteLeadsHandler",
+			"action":     "DeleteMultipleLeadsHandler",
 			"method":     r.Method,
 			"url":        r.URL.Path,
 			"remoteAddr": r.RemoteAddr,
@@ -131,7 +132,7 @@ func DeleteLeadsHandler(w http.ResponseWriter, r *http.Request) {
 		err = models.DeleteLead(id)
 		if err != nil {
 			utils.Warn(logrus.Fields{
-				"action":     "DeleteLeadsHandler",
+				"action":     "DeleteMultipleLeadsHandler",
 				"method":     r.Method,
 				"url":        r.URL.Path,
 				"remoteAddr": r.RemoteAddr,
@@ -149,9 +150,9 @@ func DeleteLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func UpdateLeadsHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateMultipleLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	utils.Info(logrus.Fields{
-		"action":     "UpdateLeadsHandler",
+		"action":     "UpdateMultipleLeadsHandler",
 		"method":     r.Method,
 		"url":        r.URL.Path,
 		"remoteAddr": r.RemoteAddr,
@@ -162,7 +163,7 @@ func UpdateLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	err := utils.ParseBody(r, &updateRequests)
 	if err != nil {
 		utils.Warn(logrus.Fields{
-			"action":     "UpdateLeadsHandler",
+			"action":     "UpdateMultipleLeadsHandler",
 			"method":     r.Method,
 			"url":        r.URL.Path,
 			"remoteAddr": r.RemoteAddr,
@@ -176,7 +177,7 @@ func UpdateLeadsHandler(w http.ResponseWriter, r *http.Request) {
 		updatedLead, err := models.UpdateLead(req.ID, req.Data)
 		if err != nil {
 			utils.Warn(logrus.Fields{
-				"action":     "UpdateLeadsHandler",
+				"action":     "UpdateMultipleLeadsHandler",
 				"method":     r.Method,
 				"url":        r.URL.Path,
 				"remoteAddr": r.RemoteAddr,
@@ -193,5 +194,112 @@ func UpdateLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
 		"message": "leads updated successfully",
 		"leads":   updatedLeads,
+	})
+}
+
+func CreateSingleLeadHandler(w http.ResponseWriter, r *http.Request) {
+	utils.Info(logrus.Fields{
+		"action":     "CreateSingleLeadHandler",
+		"method":     r.Method,
+		"url":        r.URL.Path,
+		"remoteAddr": r.RemoteAddr,
+	}, "POST request received at /lead")
+
+	var lead schemas.Lead
+
+	err := utils.ParseBody(r, &lead)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "CreateSingleLeadHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Error decoding request body: %v", err))
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	err = utils.ValidateLead(&lead)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "CreateMultipleLeadsHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Validation failed: %v", err))
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	createdLead, err := models.CreateLead(&lead)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "CreateMultipleLeadsHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Error creating lead: %v", err))
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusCreated, map[string]interface{}{
+		"message": "lead created successfully",
+		"lead":    createdLead,
+	})
+}
+
+func GetRandomLeadHandler(w http.ResponseWriter, r *http.Request) {
+	utils.Info(logrus.Fields{
+		"action":     "GetRandomLeadHandler",
+		"method":     r.Method,
+		"url":        r.URL.Path,
+		"remoteAddr": r.RemoteAddr,
+	}, "GET request received at /lead")
+
+	lead, err := models.GetRandomLead()
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "GetRandomLeadHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, "Error retrieving random lead: "+err.Error())
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "random lead fetched successfully",
+		"lead":    lead,
+	})
+}
+
+func GetLeadByIDHandler(w http.ResponseWriter, r *http.Request) {
+	utils.Info(logrus.Fields{
+		"action":     "GetLeadByIDHandler",
+		"method":     r.Method,
+		"url":        r.URL.Path,
+		"remoteAddr": r.RemoteAddr,
+	}, "GET request received at /lead/{id}")
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	lead, err := models.GetLeadByID(id)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "GetLeadByIDHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Unable to fetch lead: %v", err))
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "lead fetched successfully",
+		"lead":    lead,
 	})
 }
