@@ -148,3 +148,50 @@ func DeleteLeadsHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "leads deleted successfully",
 	})
 }
+
+func UpdateLeadsHandler(w http.ResponseWriter, r *http.Request) {
+	utils.Info(logrus.Fields{
+		"action":     "UpdateLeadsHandler",
+		"method":     r.Method,
+		"url":        r.URL.Path,
+		"remoteAddr": r.RemoteAddr,
+	}, "PUT request received at /leads")
+
+	var updateRequests []schemas.UpdateLeadRequest
+
+	err := utils.ParseBody(r, &updateRequests)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "UpdateLeadsHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Error decoding request body: %v", err))
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	var updatedLeads []schemas.Lead
+	for _, req := range updateRequests {
+		updatedLead, err := models.UpdateLead(req.ID, req.Data)
+		if err != nil {
+			utils.Warn(logrus.Fields{
+				"action":     "UpdateLeadsHandler",
+				"method":     r.Method,
+				"url":        r.URL.Path,
+				"remoteAddr": r.RemoteAddr,
+				"leadID":     req.ID,
+			}, fmt.Sprintf("Error updating lead with id %s: %v", req.ID, err))
+			utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{
+				"error": fmt.Sprintf("error updating lead with id %s: %v", req.ID, err),
+			})
+			return
+		}
+		updatedLeads = append(updatedLeads, *updatedLead)
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "leads updated successfully",
+		"leads":   updatedLeads,
+	})
+}

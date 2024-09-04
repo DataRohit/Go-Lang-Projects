@@ -5,6 +5,7 @@ import (
 	"go-simple-crm-tool/api/schemas"
 	"go-simple-crm-tool/internal/database"
 	"go-simple-crm-tool/pkg/utils"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -48,4 +49,22 @@ func DeleteLead(id uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func UpdateLead(id uuid.UUID, updatedData map[string]interface{}) (*schemas.Lead, error) {
+	var lead schemas.Lead
+
+	result := database.DatabaseConnection.Where("id = ?", id).First(&lead)
+	if result.Error != nil {
+		log.Printf("Error finding lead with id %s: %v", id, result.Error)
+		return nil, result.Error
+	}
+
+	result = database.DatabaseConnection.Model(&lead).Updates(updatedData)
+	if result.Error != nil {
+		log.Printf("Error updating lead with id %s: %v", id, result.Error)
+		return nil, result.Error
+	}
+
+	return &lead, nil
 }

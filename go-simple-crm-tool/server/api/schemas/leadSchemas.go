@@ -29,3 +29,8 @@ func (s *Lead) BeforeUpdate(tx *gorm.DB) (err error) {
 	s.UpdatedAt = &now
 	return
 }
+
+type UpdateLeadRequest struct {
+	ID   uuid.UUID              `json:"id"`
+	Data map[string]interface{} `json:"data"`
+}
