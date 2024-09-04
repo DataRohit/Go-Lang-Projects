@@ -110,7 +110,7 @@ func DeleteLeadByID(id string) error {
 	return nil
 }
 
-func UpdateLead(id uuid.UUID, updatedData map[string]interface{}) (*schemas.Lead, error) {
+func UpdateLeadByID(id uuid.UUID, updatedData map[string]interface{}) (*schemas.Lead, error) {
 	var lead schemas.Lead
 
 	result := database.DatabaseConnection.Where("id = ?", id).First(&lead)

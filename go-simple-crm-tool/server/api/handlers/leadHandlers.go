@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"go-simple-crm-tool/api/models"
 	"go-simple-crm-tool/api/schemas"
@@ -174,7 +175,7 @@ func UpdateMultipleLeadsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var updatedLeads []schemas.Lead
 	for _, req := range updateRequests {
-		updatedLead, err := models.UpdateLead(req.ID, req.Data)
+		updatedLead, err := models.UpdateLeadByID(req.ID, req.Data)
 		if err != nil {
 			utils.Warn(logrus.Fields{
 				"action":     "UpdateMultipleLeadsHandler",
@@ -329,5 +330,59 @@ func DeleteLeadByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
 		"message": "lead deleted successfully",
+	})
+}
+
+func UpdateLeadByIDHandler(w http.ResponseWriter, r *http.Request) {
+	utils.Info(logrus.Fields{
+		"action":     "UpdateLeadByIDHandler",
+		"method":     r.Method,
+		"url":        r.URL.Path,
+		"remoteAddr": r.RemoteAddr,
+	}, "PUT request received at /lead/{id}")
+
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "UpdateLeadByIDHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Error parsing UUID: %v", err))
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "invalid UUID format"})
+		return
+	}
+
+	var updatedData map[string]interface{}
+	err = json.NewDecoder(r.Body).Decode(&updatedData)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "UpdateLeadByIDHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Error decoding request body: %v", err))
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "invalid request body"})
+		return
+	}
+
+	updatedLead, err := models.UpdateLeadByID(id, updatedData)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "UpdateLeadByIDHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Unable to update lead: %v", err))
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
+		"message": "lead updated successfully",
+		"lead":    updatedLead,
 	})
 }
