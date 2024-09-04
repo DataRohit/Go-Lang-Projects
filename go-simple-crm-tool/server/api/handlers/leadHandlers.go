@@ -7,6 +7,7 @@ import (
 	"go-simple-crm-tool/pkg/utils"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
@@ -75,7 +76,7 @@ func GetAllLeadsHandler(w http.ResponseWriter, r *http.Request) {
 		"remoteAddr": r.RemoteAddr,
 	}, "GET request received at /leads")
 
-	leads, err := models.GetAllLeadsHandler()
+	leads, err := models.GetAllLeads()
 	if err != nil {
 		utils.Warn(logrus.Fields{
 			"action":     "GetAllLeadsHandler",
@@ -101,5 +102,49 @@ func GetAllLeadsHandler(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusOK, map[string]interface{}{
 		"message": "leads fetched successfully",
 		"leads":   leads,
+	})
+}
+
+func DeleteLeadsHandler(w http.ResponseWriter, r *http.Request) {
+	utils.Info(logrus.Fields{
+		"action":     "DeleteLeadsHandler",
+		"method":     r.Method,
+		"url":        r.URL.Path,
+		"remoteAddr": r.RemoteAddr,
+	}, "DELETE request received at /leads")
+
+	var ids []uuid.UUID
+
+	err := utils.ParseBody(r, &ids)
+	if err != nil {
+		utils.Warn(logrus.Fields{
+			"action":     "DeleteLeadsHandler",
+			"method":     r.Method,
+			"url":        r.URL.Path,
+			"remoteAddr": r.RemoteAddr,
+		}, fmt.Sprintf("Error decoding request body: %v", err))
+		utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	for _, id := range ids {
+		err = models.DeleteLead(id)
+		if err != nil {
+			utils.Warn(logrus.Fields{
+				"action":     "DeleteLeadsHandler",
+				"method":     r.Method,
+				"url":        r.URL.Path,
+				"remoteAddr": r.RemoteAddr,
+				"leadID":     id,
+			}, fmt.Sprintf("Error deleting lead with id %s: %v", id, err))
+			utils.WriteJSONResponse(w, http.StatusInternalServerError, map[string]string{
+				"error": fmt.Sprintf("error deleting lead with id %s: %v", id, err),
+			})
+			return
+		}
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, map[string]string{
+		"message": "leads deleted successfully",
 	})
 }

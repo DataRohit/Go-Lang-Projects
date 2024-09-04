@@ -9,7 +9,5 @@ import (
 var RegisterLeadRoutes = func(router *mux.Router) {
 	router.HandleFunc("/leads", handlers.CreateLeadsHandler).Methods("POST")
 	router.HandleFunc("/leads", handlers.GetAllLeadsHandler).Methods("GET")
-	// router.HandleFunc("/leads/{id}", handlers.GetLeadByIDHandler).Methods("GET")
-	// router.HandleFunc("/leads/{id}", handlers.DeleteLeadHandler).Methods("DELETE")
-	// router.HandleFunc("/leads/{id}", handlers.UpdateLeadHandler).Methods("PUT")
+	router.HandleFunc("/leads", handlers.DeleteLeadsHandler).Methods("DELETE")
 }
