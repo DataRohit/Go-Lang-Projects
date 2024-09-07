@@ -1,0 +1,12 @@
+{
+	"Name": "Albert",
+	"Age": 32,
+	"Contact": "23344333",
+	"Company": "Dominate",
+	"Address": {
+		"City": "Bangalore",
+		"State": "Karnataka",
+		"Country": "India",
+		"Pincode": 410013
+	}
+}

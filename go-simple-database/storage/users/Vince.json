@@ -1,0 +1,12 @@
+{
+	"Name": "Vince",
+	"Age": 29,
+	"Contact": "23344333",
+	"Company": "Facebook",
+	"Address": {
+		"City": "Bangalore",
+		"State": "Karnataka",
+		"Country": "India",
+		"Pincode": 410013
+	}
+}
