@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/datarohit/go-jwt-auth-project/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -22,6 +23,9 @@ func main() {
 
 	router := gin.New()
 	router.Use(gin.Logger())
+
+	routes.AuthRoutes(router)
+	routes.UserRoutes(router)
 
 	router.GET("/api/v1", func(ginCtx *gin.Context) {
 		ginCtx.JSON(http.StatusOK, gin.H{"success": "access granted for /api/v1"})

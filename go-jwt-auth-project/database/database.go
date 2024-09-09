@@ -7,14 +7,18 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var connectionURI string = os.Getenv("MONGODB_URI")
-var databaseName string = os.Getenv("DATABASE_NAME")
-
 func DatabaseInstance() *mongo.Client {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal("error loading the .env file")
+	}
+
+	connectionURI := os.Getenv("MONGODB_URI")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
@@ -31,6 +35,8 @@ func DatabaseInstance() *mongo.Client {
 var Client *mongo.Client = DatabaseInstance()
 
 func OpenCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	databaseName := os.Getenv("DATABASE_NAME")
+
 	var collection *mongo.Collection = client.Database(databaseName).Collection(collectionName)
 	return collection
 }
