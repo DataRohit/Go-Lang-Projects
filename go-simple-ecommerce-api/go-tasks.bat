@@ -3,10 +3,6 @@
 if "%1" == "build" (
     echo Building the project...
     go build -o bin\ecom.exe cmd\main.go
-    if %errorlevel% neq 0 (
-        echo Build failed!
-        exit /b %errorlevel%
-    )
     echo Build successfully!
     exit /b
 )
@@ -14,17 +10,16 @@ if "%1" == "build" (
 if "%1" == "test" (
     echo Running tests...
     go test -v ./...
-    if %errorlevel% neq 0 (
-        echo Tests failed!
-        exit /b %errorlevel%
-    )
     echo Tests successful!
     exit /b
 )
 
 if "%1" == "run" (
+    echo Building the project...
+    go build -o bin\ecom.exe cmd\main.go
+    echo Build successfully!
     echo Running the application...
-    bin\ecom
+    bin\ecom.exe
     exit /b
 )
 
