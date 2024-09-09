@@ -11,5 +11,6 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 -   [Project 5: Go Stock Data API](./go-stock-data-api)
 -   [Project 6: Go Simple CRM Tool](./go-simple-crm-tool)
 -   [Project 7: Go Simple Database](./go-simple-database)
+-   [Project 8: Go JWT Auth Project](./go-jwt-auth-project/)
 
 Explore each project to see the code and its corresponding architecture diagram.
