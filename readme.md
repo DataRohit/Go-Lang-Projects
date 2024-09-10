@@ -12,5 +12,6 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 -   [Project 6: Go Simple CRM Tool](./go-simple-crm-tool)
 -   [Project 7: Go Simple Database](./go-simple-database)
 -   [Project 8: Go JWT Auth Project](./go-jwt-auth-project/)
+-   [Project 9: Go Simple Ecommerce API](./go-simple-ecommerce-api/)
 
 Explore each project to see the code and its corresponding architecture diagram.
