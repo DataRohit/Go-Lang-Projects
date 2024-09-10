@@ -1,0 +1,41 @@
+volumes:
+  local_mysql_data: {}
+
+services:
+  mysql:
+    image: mysql:latest
+    healthcheck:
+      test: "exit 0"
+    volumes:
+      - local_mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: ecom
+    networks:
+      - simple_ecommerce_api_network
+
+  server:
+    build:
+      context: .
+      dockerfile: dockerfile
+    restart: on-failure
+    volumes:
+      - .:/go/src/api
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: example
+      DB_NAME: ecom
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    networks:
+      - simple_ecommerce_api_network
+
+networks:
+  simple_ecommerce_api_network:
