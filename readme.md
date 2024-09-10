@@ -13,5 +13,6 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 -   [Project 7: Go Simple Database](./go-simple-database)
 -   [Project 8: Go JWT Auth Project](./go-jwt-auth-project/)
 -   [Project 9: Go Simple Ecommerce API](./go-simple-ecommerce-api/)
+-   [Project 10: Go GraphQL MongoDB CRUD](./go-graphql-mongodb-crud/)
 
 Explore each project to see the code and its corresponding architecture diagram.
