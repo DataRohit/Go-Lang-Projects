@@ -1,20 +1,15 @@
 package instance
 
 import (
-	"log"
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/datarohit/go-dynamodb-crud-api/utils/logger"
+	"go.uber.org/zap"
 )
 
 func GetConnection() *dynamodb.DynamoDB {
-	region := os.Getenv("AWS_REGION")
-	if region == "" {
-		region = "ap-south-1"
-	}
-
+	region := getRegion()
 	sess, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 		Config: aws.Config{
@@ -22,8 +17,18 @@ func GetConnection() *dynamodb.DynamoDB {
 		},
 	})
 	if err != nil {
-		log.Fatalf("failed to create AWS session: %v", err)
+		logger.GetLogger().Fatal("failed to create AWS session",
+			zap.Error(err),
+		)
 	}
 
 	return dynamodb.New(sess)
+}
+
+func getRegion() string {
+	region := os.Getenv("AWS_REGION")
+	if region == "" {
+		region = "ap-south-1"
+	}
+	return region
 }

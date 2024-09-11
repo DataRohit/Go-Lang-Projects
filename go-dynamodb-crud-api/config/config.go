@@ -1,10 +1,11 @@
 package config
 
 import (
-	"log"
 	"strconv"
 
 	"github.com/datarohit/go-dynamodb-crud-api/utils/env"
+	"github.com/datarohit/go-dynamodb-crud-api/utils/logger"
+	"go.uber.org/zap"
 )
 
 type Config struct {
@@ -27,7 +28,12 @@ func parseEnvToInt(envName, defaultValue string) int {
 	value := env.GetEnv(envName, defaultValue)
 	num, err := strconv.Atoi(value)
 	if err != nil {
-		log.Printf("Invalid value for %s: %s, using default value: %s", envName, value, defaultValue)
+		logger.GetLogger().Warn("Invalid environment variable value",
+			zap.String("variable", envName),
+			zap.String("value", value),
+			zap.String("default_value", defaultValue),
+			zap.Error(err),
+		)
 		num, _ = strconv.Atoi(defaultValue)
 	}
 	return num

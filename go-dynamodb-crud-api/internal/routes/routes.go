@@ -6,10 +6,12 @@ import (
 	"time"
 
 	ServerConfig "github.com/datarohit/go-dynamodb-crud-api/config"
+	"github.com/datarohit/go-dynamodb-crud-api/internal/repository/adapter"
 	"github.com/datarohit/go-dynamodb-crud-api/utils/logger"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type Router struct {
@@ -116,7 +118,15 @@ func recoveryMiddleware(next http.Handler) http.Handler {
 		defer func() {
 			if rec := recover(); rec != nil {
 				errMsg := "Internal Server Error"
-				logger.LogError(r, traceID, errMsg, nil)
+				logger.GetLogger().Error("request recovery",
+					zap.String("method", r.Method),
+					zap.String("url", r.URL.Path),
+					zap.String("remote_addr", r.RemoteAddr),
+					zap.String("trace_id", traceID),
+					zap.String("message", errMsg),
+					zap.Any("recovered", rec),
+					zap.Time("timestamp", time.Now()),
+				)
 				http.Error(w, errMsg, http.StatusInternalServerError)
 			}
 		}()
