@@ -7,6 +7,7 @@ import (
 
 	ServerConfig "github.com/datarohit/go-dynamodb-crud-api/config"
 	HealthHandler "github.com/datarohit/go-dynamodb-crud-api/internal/handlers/health"
+	ProductHandler "github.com/datarohit/go-dynamodb-crud-api/internal/handlers/product"
 	"github.com/datarohit/go-dynamodb-crud-api/internal/repository/adapter"
 	"github.com/datarohit/go-dynamodb-crud-api/utils/logger"
 	"github.com/go-chi/chi/v5"
@@ -48,6 +49,19 @@ func (r *Router) RouterHealth(repository adapter.Interface) {
 		route.Get("/", handler.Get)
 		route.Put("/", handler.Put)
 		route.Delete("/", handler.Delete)
+		route.Options("/", handler.Options)
+	})
+}
+
+func (r *Router) RouterProduct(repository adapter.Interface) {
+	handler := ProductHandler.NewHandler(repository)
+
+	r.router.Route("/product", func(route chi.Router) {
+		route.Post("/", handler.Post)
+		route.Get("/", handler.Get)
+		route.Get("/{ID}", handler.Get)
+		route.Put("/{ID}", handler.Put)
+		route.Delete("/{ID}", handler.Delete)
 		route.Options("/", handler.Options)
 	})
 }
