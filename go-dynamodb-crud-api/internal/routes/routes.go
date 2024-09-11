@@ -6,10 +6,10 @@ import (
 	"time"
 
 	ServerConfig "github.com/datarohit/go-dynamodb-crud-api/config"
+	HealthHandler "github.com/datarohit/go-dynamodb-crud-api/internal/handlers/health"
 	"github.com/datarohit/go-dynamodb-crud-api/internal/repository/adapter"
 	"github.com/datarohit/go-dynamodb-crud-api/utils/logger"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
@@ -33,26 +33,23 @@ func (r *Router) SetRouters(repository adapter.Interface) *chi.Mux {
 
 func (r *Router) setConfigsRouters() {
 	r.EnableCORS()
-	r.EnableLogger()
+	r.EnableLogging()
 	r.EnableTimeout()
-	r.EnableRecover()
+	r.EnableRecovery()
 	r.EnableRequestID()
 	r.EnableRealIP()
-	r.EnableCustomLogging()
-	r.EnableCustomTimeout()
-	r.EnableCustomRecovery()
-	r.EnableCustomRequestID()
-	r.EnableCustomRealIP()
 }
 
-func (r *Router) EnableLogger() *Router {
-	r.router.Use(middleware.Logger)
-	return r
-}
+func (r *Router) RouterHealth(repository adapter.Interface) {
+	handler := HealthHandler.NewHandler(repository)
 
-func (r *Router) EnableTimeout() *Router {
-	r.router.Use(middleware.Timeout(r.config.GetTimeout()))
-	return r
+	r.router.Route("/health", func(route chi.Router) {
+		route.Post("/", handler.Post)
+		route.Get("/", handler.Get)
+		route.Put("/", handler.Put)
+		route.Delete("/", handler.Delete)
+		route.Options("/", handler.Options)
+	})
 }
 
 func (r *Router) EnableCORS() *Router {
@@ -60,42 +57,27 @@ func (r *Router) EnableCORS() *Router {
 	return r
 }
 
-func (r *Router) EnableRecover() *Router {
-	r.router.Use(middleware.Recoverer)
-	return r
-}
-
-func (r *Router) EnableRequestID() *Router {
-	r.router.Use(middleware.RequestID)
-	return r
-}
-
-func (r *Router) EnableRealIP() *Router {
-	r.router.Use(middleware.RealIP)
-	return r
-}
-
-func (r *Router) EnableCustomLogging() *Router {
+func (r *Router) EnableLogging() *Router {
 	r.router.Use(loggingMiddleware)
 	return r
 }
 
-func (r *Router) EnableCustomTimeout() *Router {
+func (r *Router) EnableTimeout() *Router {
 	r.router.Use(timeoutMiddleware)
 	return r
 }
 
-func (r *Router) EnableCustomRecovery() *Router {
+func (r *Router) EnableRecovery() *Router {
 	r.router.Use(recoveryMiddleware)
 	return r
 }
 
-func (r *Router) EnableCustomRequestID() *Router {
+func (r *Router) EnableRequestID() *Router {
 	r.router.Use(requestIDMiddleware)
 	return r
 }
 
-func (r *Router) EnableCustomRealIP() *Router {
+func (r *Router) EnableRealIP() *Router {
 	r.router.Use(realIPMiddleware)
 	return r
 }
