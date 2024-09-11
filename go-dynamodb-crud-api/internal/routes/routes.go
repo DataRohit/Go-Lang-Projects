@@ -29,6 +29,10 @@ func NewRouter() *Router {
 
 func (r *Router) SetRouters(repository adapter.Interface) *chi.Mux {
 	r.setConfigsRouters()
+
+	r.RouterHealth(repository)
+	r.RouterProduct(repository)
+
 	return r.router
 }
 
