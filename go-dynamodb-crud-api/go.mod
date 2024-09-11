@@ -3,6 +3,7 @@ module github.com/datarohit/go-dynamodb-crud-api
 go 1.23.1
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
 	github.com/aws/aws-sdk-go v1.55.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-chi/chi v1.5.5 // indirect
