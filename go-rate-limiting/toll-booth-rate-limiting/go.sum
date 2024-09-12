@@ -1,0 +1,4 @@
+github.com/didip/tollbooth/v7 v7.0.2 h1:WYEfusYI6g64cN0qbZgekDrYfuYBZjUZd5+RlWi69p4=
+github.com/didip/tollbooth/v7 v7.0.2/go.mod h1:RtRYfEmFGX70+ike5kSndSvLtQ3+F2EAmTI4Un/VXNc=
+github.com/go-pkgz/expirable-cache/v3 v3.0.0 h1:u3/gcu3sabLYiTCevoRKv+WzjIn5oo7P8XtiXBeRDLw=
+github.com/go-pkgz/expirable-cache/v3 v3.0.0/go.mod h1:2OQiDyEGQalYecLWmXprm3maPXeVb5/6/X7yRPYTzec=
