@@ -15,5 +15,6 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 -   [Project 9: Go Simple Ecommerce API](./go-simple-ecommerce-api/)
 -   [Project 10: Go GraphQL MongoDB CRUD](./go-graphql-mongodb-crud/)
 -   [Project 11: Go DynamoDB CRUD API](./go-dynamodb-crud-api/)
+-   [Project 12: Go JWT CSRF Project](./go-jwt-csrf-project/)
 
 Explore each project to see the code and its corresponding architecture diagram.
