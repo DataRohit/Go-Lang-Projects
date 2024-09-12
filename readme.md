@@ -16,5 +16,8 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 -   [Project 10: Go GraphQL MongoDB CRUD](./go-graphql-mongodb-crud/)
 -   [Project 11: Go DynamoDB CRUD API](./go-dynamodb-crud-api/)
 -   [Project 12: Go JWT CSRF Project](./go-jwt-csrf-project/)
+-   [Project 13a: Go Rate Limiting / Tool Booth Rate Limiting](./go-rate-limiting/toll-booth-rate-limiting/)
+-   [Project 13b: Go Rate Limiting / Token Bucket](./go-rate-limiting/token-bucket/)
+-   [Project 13c: Go Rate Limiting / Client Rate Limiting](./go-rate-limiting/client-rate-limiting/)
 
 Explore each project to see the code and its corresponding architecture diagram.
