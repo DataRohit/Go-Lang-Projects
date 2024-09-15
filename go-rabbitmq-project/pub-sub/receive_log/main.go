@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://root:examplet@localhost:5672/")
 	handleError(err, "Connection failed")
 	defer conn.Close()
 
