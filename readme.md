@@ -19,5 +19,10 @@ This repository houses a series of Go Lang projects, each demonstrating differen
 -   [Project 13a: Go Rate Limiting / Tool Booth Rate Limiting](./go-rate-limiting/toll-booth-rate-limiting/)
 -   [Project 13b: Go Rate Limiting / Token Bucket](./go-rate-limiting/token-bucket/)
 -   [Project 13c: Go Rate Limiting / Client Rate Limiting](./go-rate-limiting/client-rate-limiting/)
+-   [Project 14a: Go RabbitMQ Project / Simple Sending and Receiving](./go-rabbitmq-project/hello-world/)
+-   [Project 14b: Go RabbitMQ Project / Work Queues](./go-rabbitmq-project/worker-queues/)
+-   [Project 14c: Go RabbitMQ Project / Publish/Subscribe](./go-rabbitmq-project/pub-sub/)
+-   [Project 14d: Go RabbitMQ Project / Routing](./go-rabbitmq-project/routing/)
+-   [Project 14e: Go RabbitMQ Project / Topics](./go-rabbitmq-project/topics/)
 
 Explore each project to see the code and its corresponding architecture diagram.
